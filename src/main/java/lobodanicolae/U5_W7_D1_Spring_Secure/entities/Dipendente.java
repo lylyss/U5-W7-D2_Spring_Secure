@@ -4,6 +4,7 @@ package lobodanicolae.U5_W7_D1_Spring_Secure.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lobodanicolae.U5_W7_D1_Spring_Secure.Enums.TipoUser;
 
 import java.util.UUID;
 
@@ -30,6 +31,10 @@ public class Dipendente {
 
     @NotBlank
     private String password;
+
+    @NotBlank
+    @Enumerated(EnumType.STRING)
+    private TipoUser ruolo;
 
 
     private String immagineProfiloPath;
@@ -84,5 +89,13 @@ public class Dipendente {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public TipoUser getRuolo() {
+        return ruolo;
+    }
+
+    public void setRuolo(TipoUser ruolo) {
+        this.ruolo = ruolo;
     }
 }

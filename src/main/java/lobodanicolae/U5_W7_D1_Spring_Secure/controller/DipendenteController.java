@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lobodanicolae.U5_W7_D1_Spring_Secure.Payloads.DipendentePayload;
 import lobodanicolae.U5_W7_D1_Spring_Secure.entities.Dipendente;
 import lobodanicolae.U5_W7_D1_Spring_Secure.services.DipendenteService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +17,9 @@ import java.util.UUID;
 @RequestMapping("/dipendenti")
 public class DipendenteController {
     private final DipendenteService service;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public DipendenteController(DipendenteService service) {
         this.service = service;
@@ -56,6 +61,8 @@ public class DipendenteController {
         dipendente.setCognome(payload.cognome());
         dipendente.setEmail(payload.email());
         dipendente.setImmagineProfiloPath(payload.immagineProfiloPath());
+        dipendente.setPassword(passwordEncoder.encode(payload.password()));
+        dipendente.setRuolo(payload.ruolo());
         Dipendente salvato = service.save(dipendente);
         return new DipendentePayload(
                 salvato.getId(),
@@ -63,7 +70,9 @@ public class DipendenteController {
                 salvato.getNome(),
                 salvato.getCognome(),
                 salvato.getEmail(),
-                salvato.getImmagineProfiloPath()
+                salvato.getImmagineProfiloPath(),
+                null, // non restituiamo la password
+                salvato.getRuolo()
         );
     }// end create
 

@@ -1,8 +1,9 @@
 package lobodanicolae.U5_W7_D1_Spring_Secure.security;
 
-import io.jsonwebtoken.lang.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +14,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -23,7 +25,14 @@ public class SecurityConfig {
         httpSecurity.formLogin(formLogin -> formLogin.disable());
         httpSecurity.csrf(csrf -> csrf.disable());
         httpSecurity.sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        httpSecurity.authorizeHttpRequests(h -> h.requestMatchers("/**").permitAll());
+        httpSecurity.authorizeHttpRequests(helicopter -> helicopter
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/dipendenti/**").hasAnyAuthority("ADMIN")
+                .requestMatchers("/prenotazioni/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers("/viaggi/**").hasAnyAuthority("USER", "ADMIN")
+                .anyRequest().authenticated()
+        );
+        httpSecurity.cors(Customizer.withDefaults());
         return httpSecurity.build();
     }
 
@@ -35,7 +44,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3001"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3001", "http://laviaggi.it"));
 
 
         configuration.setAllowedMethods(List.of("*"));
